@@ -29,15 +29,13 @@
             padding: env(safe-area-inset-top) 20px 40px 20px;
         }
 
-        /* Contenedor Principal Adaptable */
         .container {
             width: 100%;
-            max-width: 450px; /* Tamaño ideal escritorio/móvil */
+            max-width: 450px;
             text-align: center;
             margin-top: 5vh;
         }
 
-        /* Tipografía Pedida */
         h1 {
             font-family: 'Black Ops One', cursive;
             font-size: clamp(3rem, 12vw, 4.5rem);
@@ -60,7 +58,6 @@
             font-weight: 700;
         }
 
-        /* Botón de Instalación */
         #install-btn {
             display: none;
             background: var(--fucsia);
@@ -80,12 +77,12 @@
             50% { transform: translateY(-5px); }
         }
 
-        /* Estilo de Enlaces */
+        /* Estilo de Tarjetas con PNG */
         .link-card {
             background: var(--negro-mate);
             border: 1px solid #333;
             border-radius: 15px;
-            padding: 16px 20px;
+            padding: 10px 20px;
             margin-bottom: 16px;
             display: flex;
             align-items: center;
@@ -93,6 +90,7 @@
             color: white;
             transition: 0.3s;
             position: relative;
+            min-height: 70px; /* Altura mínima para que quepa el icono */
         }
 
         .link-card:hover {
@@ -101,11 +99,13 @@
             background: #1a1a1a;
         }
 
-        .link-icon {
-            font-size: 1.5rem;
-            width: 40px;
-            color: var(--fucsia);
+        /* CONFIGURACIÓN DE LOS ICONOS PNG */
+        .custom-icon {
+            width: 45px;
+            height: 45px;
+            object-fit: contain; /* Asegura que el PNG no se deforme */
             margin-right: 15px;
+            filter: drop-shadow(0 0 5px rgba(255,0,255,0.3)); /* Brillo suave al icono */
         }
 
         .link-text {
@@ -115,13 +115,11 @@
             text-align: left;
         }
 
-        /* Botón Borrar */
         .delete-btn {
-            background: none; border: none; color: #444; padding: 10px; cursor: pointer;
+            background: none; border: none; color: #444; padding: 10px; cursor: pointer; z-index: 10;
         }
         .delete-btn:hover { color: #ff4444; }
 
-        /* Panel Admin */
         #admin-panel {
             display: none;
             background: #0a0a0a;
@@ -129,17 +127,20 @@
             padding: 20px;
             border-radius: 15px;
             margin-top: 20px;
+            text-align: left;
         }
 
-        input, select, .save-btn {
+        input, .save-btn {
             width: 100%; padding: 12px; margin-bottom: 12px;
             border-radius: 8px; border: 1px solid #333;
             background: #1a1a1a; color: white; box-sizing: border-box;
         }
+        
+        label { font-size: 0.8rem; color: #888; margin-bottom: 5px; display: block; }
 
         .save-btn {
             background: var(--fucsia); border: none; font-family: 'Black Ops One';
-            font-size: 1.1rem; cursor: pointer;
+            font-size: 1.1rem; cursor: pointer; margin-top: 10px;
         }
 
         #admin-toggle {
@@ -161,17 +162,20 @@
         <button id="admin-toggle" onclick="toggleAdmin()">⚙️</button>
 
         <div id="admin-panel">
-            <h2 style="color:var(--fucsia); font-size: 1.2rem; margin-top:0;">NUEVOS VÍNCULOS</h2>
-            <input type="text" id="titulo" placeholder="Nombre del enlace">
-            <input type="url" id="url" placeholder="https://ejemplo.com">
-            <select id="icono">
-                <option value="fa-solid fa-link">🔗 Enlace</option>
-                <option value="fa-brands fa-instagram">📸 Instagram</option>
-                <option value="fa-brands fa-tiktok">🎵 TikTok</option>
-                <option value="fa-brands fa-whatsapp">💬 WhatsApp</option>
-                <option value="fa-brands fa-youtube">🎬 YouTube</option>
-                <option value="fa-solid fa-heart">💖 Otros</option>
-            </select>
+            <h2 style="color:var(--fucsia); font-size: 1.2rem; margin-top:0; text-align:center;">ADMINISTRAR</h2>
+            
+            <label>1. Título del Botón</label>
+            <input type="text" id="titulo" placeholder="Ej: Mi Instagram">
+            
+            <label>2. Enlace (Link)</label>
+            <input type="url" id="url" placeholder="https://...">
+
+            <label>3. Nombre exacto del PNG (Opcional)</label>
+            <input type="text" id="nombreIcono" placeholder="Ej: camara (Déjalo vacío para automático)">
+            <small style="color:#555; display:block; margin-top:-10px; margin-bottom:10px; font-size:0.7rem;">
+                *Si lo dejas vacío, buscaré una imagen llamada "mi_instagram.png" en tu GitHub.
+            </small>
+            
             <button class="save-btn" onclick="agregarEnlace()">GUARDAR</button>
         </div>
     </div>
@@ -180,7 +184,19 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE TU BASE DE DATOS
+        // ==========================================
+        //  CONFIGURACIÓN DE TUS ICONOS (GITHUB)
+        // ==========================================
+        // Cambia esto por la URL de tu carpeta en GitHub donde subirás los PNGs.
+        // Asegúrate de usar el enlace "raw" o de GitHub Pages.
+        // Ejemplo: "https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/iconos/"
+        // IMPORTANTE: Deja la barra "/" al final.
+        
+        const REPO_URL = "https://raw.githubusercontent.com/liliana-dev/iconos-rouss/main/"; 
+        const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/7794/7794505.png"; // Icono estrella por si falla
+
+        // ==========================================
+
         const firebaseConfig = {
             apiKey: "AIzaSyBqHgV4vDat1-VmZfKbiPg7nuiX-ROcexw",
             authDomain: "cirineo-cec21.firebaseapp.com",
@@ -194,65 +210,61 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 1. GENERADOR DE MANIFIESTO Y SW (TODO EN UNO) ---
+        // --- MANIFIESTO Y SW ---
         const manifest = {
-            "name": "VIVA ROUSS",
-            "short_name": "ROUSS",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#FF00FF",
-            "icons": [{
-                "src": "https://ui-avatars.com/api/?name=VR&background=FF00FF&color=fff&size=512",
-                "sizes": "512x512",
-                "type": "image/png"
-            }]
+            "name": "VIVA ROUSS", "short_name": "ROUSS", "start_url": ".", "display": "standalone",
+            "background_color": "#000000", "theme_color": "#FF00FF",
+            "icons": [{"src": "https://ui-avatars.com/api/?name=VR&background=FF00FF&color=fff&size=512", "sizes": "512x512", "type": "image/png"}]
         };
         const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        const manifestTag = document.createElement('link');
-        manifestTag.rel = 'manifest';
-        manifestTag.href = manifestURL;
-        document.head.appendChild(manifestTag);
-
-        // Service Worker Virtual
-        const swCode = `self.addEventListener('fetch', function(e){});`;
-        const swBlob = new Blob([swCode], {type: 'application/javascript'});
-        const swURL = URL.createObjectURL(swBlob);
+        document.head.appendChild(Object.assign(document.createElement('link'), {rel: 'manifest', href: URL.createObjectURL(manifestBlob)}));
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(swURL);
+            navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('fetch', function(e){});`], {type: 'application/javascript'})));
         }
 
-        // --- 2. LÓGICA DE INSTALACIÓN ---
+        // --- INSTALACIÓN ---
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').style.display = 'inline-block';
-        });
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'inline-block'; });
+        document.getElementById('install-btn').addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; document.getElementById('install-btn').style.display = 'none'; }});
 
-        document.getElementById('install-btn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-                document.getElementById('install-btn').style.display = 'none';
-            }
-        });
-
-        // --- 3. LÓGICA DE FIREBASE ---
+        // --- FIREBASE Y LÓGICA DE ICONOS ---
         const q = query(collection(db, "enlaces"), orderBy("creado", "asc"));
+        
         onSnapshot(q, (snapshot) => {
             const container = document.getElementById('links-container');
             container.innerHTML = "";
+            
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 const id = docSnap.id;
+
+                // 1. Determinar el nombre del archivo PNG
+                let iconFileName;
+
+                if (data.nombreIcono && data.nombreIcono.trim() !== "") {
+                    // Si el usuario especificó un nombre manual, úsalo (ej: "camara")
+                    iconFileName = data.nombreIcono.trim();
+                } else {
+                    // LÓGICA AUTOMÁTICA: Convertir Título a nombre de archivo
+                    // "Mi Instagram" -> "mi_instagram"
+                    iconFileName = data.titulo
+                        .toLowerCase()
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+                        .replace(/ /g, "_") // Espacios por guiones bajos
+                        .replace(/[^a-z0-9_]/g, ""); // Quitar caracteres raros
+                }
+
+                // Asegurar extensión .png (si el usuario no la puso)
+                if (!iconFileName.endsWith('.png')) iconFileName += '.png';
+
+                const finalIconUrl = REPO_URL + iconFileName;
+
                 const card = document.createElement('div');
                 card.className = 'link-card';
                 card.innerHTML = `
                     <a href="${data.url}" target="_blank" style="display:flex; align-items:center; width:100%; text-decoration:none; color:white;">
-                        <i class="${data.icono} link-icon"></i>
+                        <img src="${finalIconUrl}" class="custom-icon" onerror="this.onerror=null;this.src='${DEFAULT_ICON}';">
                         <span class="link-text">${data.titulo}</span>
                     </a>
                     <button class="delete-btn" onclick="eliminar('${id}')"><i class="fas fa-trash"></i></button>
@@ -264,13 +276,20 @@
         window.agregarEnlace = async () => {
             const titulo = document.getElementById('titulo').value;
             const url = document.getElementById('url').value;
-            const icono = document.getElementById('icono').value;
+            const nombreIcono = document.getElementById('nombreIcono').value; // Opcional
+
             if (!titulo || !url) return;
+            
             await addDoc(collection(db, "enlaces"), {
-                titulo, url, icono, creado: serverTimestamp()
+                titulo, 
+                url, 
+                nombreIcono, // Guardamos lo que escribió (o vacío)
+                creado: serverTimestamp()
             });
+            
             document.getElementById('titulo').value = "";
             document.getElementById('url').value = "";
+            document.getElementById('nombreIcono').value = "";
             toggleAdmin();
         };
 
