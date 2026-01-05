@@ -2,89 +2,110 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF00FF">
     <title>VIVA ROUSS by Liliana</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- ESTILOS VISUALES --- */
+        :root {
+            --fucsia: #FF00FF;
+            --negro-mate: #121212;
+            --negro-puro: #000000;
+        }
+
         body {
-            background-color: #121212;
+            background-color: var(--negro-puro);
+            background-image: radial-gradient(circle at top, #1a1a1a 0%, #000000 100%);
             color: #ffffff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: env(safe-area-inset-top) 20px 40px 20px;
         }
 
+        /* Contenedor Principal Adaptable */
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px; /* Tamaño ideal escritorio/móvil */
             text-align: center;
-            margin-top: 40px;
-            position: relative;
+            margin-top: 5vh;
         }
 
-        /* Títulos */
+        /* Tipografía Pedida */
         h1 {
             font-family: 'Black Ops One', cursive;
-            font-size: 3.5rem;
-            color: #FF00FF;
+            font-size: clamp(3rem, 12vw, 4.5rem);
+            color: var(--fucsia);
             margin: 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
             line-height: 1;
             text-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
         }
 
         .subtitle {
             font-family: 'Dancing Script', cursive;
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 6vw, 1.8rem);
             color: #ffffff;
-            margin-top: -5px;
-            margin-bottom: 50px;
             display: block;
             text-align: right;
-            padding-right: 20px;
-            opacity: 0.9;
+            margin-top: -5px;
+            margin-bottom: 40px;
+            padding-right: 15px;
+            font-weight: 700;
         }
 
-        /* Tarjetas de Enlaces */
+        /* Botón de Instalación */
+        #install-btn {
+            display: none;
+            background: var(--fucsia);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Estilo de Enlaces */
         .link-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
+            background: var(--negro-mate);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             text-decoration: none;
             color: white;
-            transition: all 0.3s ease;
+            transition: 0.3s;
             position: relative;
         }
 
         .link-card:hover {
-            background: rgba(255, 0, 255, 0.15);
-            border-color: #FF00FF;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.2);
+            border-color: var(--fucsia);
+            transform: scale(1.02);
+            background: #1a1a1a;
         }
 
         .link-icon {
             font-size: 1.5rem;
             width: 40px;
-            text-align: center;
+            color: var(--fucsia);
             margin-right: 15px;
-            color: #FF00FF;
         }
 
         .link-text {
@@ -94,71 +115,36 @@
             text-align: left;
         }
 
-        /* Botón de borrar (visible solo para admin) */
+        /* Botón Borrar */
         .delete-btn {
-            background: none;
-            border: none;
-            color: #444;
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.3s;
+            background: none; border: none; color: #444; padding: 10px; cursor: pointer;
         }
-        .delete-btn:hover { color: red; }
+        .delete-btn:hover { color: #ff4444; }
 
-        /* --- PANEL DE ADMINISTRACIÓN --- */
-        #admin-toggle {
-            margin-top: 50px;
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
+        /* Panel Admin */
         #admin-panel {
-            display: none; /* Oculto por defecto */
-            margin-top: 20px;
+            display: none;
+            background: #0a0a0a;
+            border: 1px dashed var(--fucsia);
             padding: 20px;
-            border: 1px dashed #FF00FF;
-            border-radius: 10px;
-            background: #1a1a1a;
-            width: 100%;
-            box-sizing: border-box;
+            border-radius: 15px;
+            margin-top: 20px;
         }
 
-        .input-group { margin-bottom: 10px; text-align: left; }
-        
-        input, select {
-            width: 100%;
-            padding: 10px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 5px;
-            box-sizing: border-box; /* Para que el padding no rompa el ancho */
+        input, select, .save-btn {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            border-radius: 8px; border: 1px solid #333;
+            background: #1a1a1a; color: white; box-sizing: border-box;
         }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: #FF00FF;
+        .save-btn {
+            background: var(--fucsia); border: none; font-family: 'Black Ops One';
+            font-size: 1.1rem; cursor: pointer;
         }
 
-        button.save-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #FF00FF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-family: 'Black Ops One', cursive;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-top: 10px;
+        #admin-toggle {
+            margin-top: 50px; background: none; border: none; color: #222; cursor: pointer;
         }
-        
-        button.save-btn:hover { background-color: #d400d4; }
-
     </style>
 </head>
 <body>
@@ -167,38 +153,26 @@
         <h1>VIVA ROUSS</h1>
         <span class="subtitle">by Liliana</span>
 
-        <div id="links-container">
-            <p style="color:gray; font-size:0.9rem">Cargando...</p>
-        </div>
+        <button id="install-btn"><i class="fas fa-download"></i> INSTALAR APP</button>
 
-        <button id="admin-toggle" onclick="toggleAdmin()">⚙️ Gestionar Enlaces</button>
+        <div id="links-container">
+            </div>
+
+        <button id="admin-toggle" onclick="toggleAdmin()">⚙️</button>
 
         <div id="admin-panel">
-            <h3 style="color:#FF00FF; margin-top:0;">Nuevo Enlace</h3>
-            
-            <div class="input-group">
-                <input type="text" id="titulo" placeholder="Título (ej: Mi Instagram)">
-            </div>
-            
-            <div class="input-group">
-                <input type="url" id="url" placeholder="Link (ej: https://instagram.com/...)">
-            </div>
-            
-            <div class="input-group">
-                <select id="icono">
-                    <option value="fa-solid fa-link">🔗 Genérico</option>
-                    <option value="fa-brands fa-instagram">📸 Instagram</option>
-                    <option value="fa-brands fa-whatsapp">💬 WhatsApp</option>
-                    <option value="fa-brands fa-tiktok">🎵 TikTok</option>
-                    <option value="fa-brands fa-facebook">📘 Facebook</option>
-                    <option value="fa-brands fa-twitter">🐦 Twitter/X</option>
-                    <option value="fa-brands fa-youtube">▶️ YouTube</option>
-                    <option value="fa-solid fa-envelope">✉️ Correo</option>
-                    <option value="fa-solid fa-location-dot">📍 Ubicación</option>
-                </select>
-            </div>
-
-            <button class="save-btn" onclick="agregarEnlace()">GUARDAR ENLACE</button>
+            <h2 style="color:var(--fucsia); font-size: 1.2rem; margin-top:0;">NUEVOS VÍNCULOS</h2>
+            <input type="text" id="titulo" placeholder="Nombre del enlace">
+            <input type="url" id="url" placeholder="https://ejemplo.com">
+            <select id="icono">
+                <option value="fa-solid fa-link">🔗 Enlace</option>
+                <option value="fa-brands fa-instagram">📸 Instagram</option>
+                <option value="fa-brands fa-tiktok">🎵 TikTok</option>
+                <option value="fa-brands fa-whatsapp">💬 WhatsApp</option>
+                <option value="fa-brands fa-youtube">🎬 YouTube</option>
+                <option value="fa-solid fa-heart">💖 Otros</option>
+            </select>
+            <button class="save-btn" onclick="agregarEnlace()">GUARDAR</button>
         </div>
     </div>
 
@@ -206,6 +180,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+        // CONFIGURACIÓN DE TU BASE DE DATOS
         const firebaseConfig = {
             apiKey: "AIzaSyBqHgV4vDat1-VmZfKbiPg7nuiX-ROcexw",
             authDomain: "cirineo-cec21.firebaseapp.com",
@@ -219,27 +194,62 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 1. ESCUCHAR ENLACES EN TIEMPO REAL (Leer)
-        // Usamos onSnapshot para que si agregas uno, aparezca al instante sin recargar.
+        // --- 1. GENERADOR DE MANIFIESTO Y SW (TODO EN UNO) ---
+        const manifest = {
+            "name": "VIVA ROUSS",
+            "short_name": "ROUSS",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#000000",
+            "theme_color": "#FF00FF",
+            "icons": [{
+                "src": "https://ui-avatars.com/api/?name=VR&background=FF00FF&color=fff&size=512",
+                "sizes": "512x512",
+                "type": "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const manifestTag = document.createElement('link');
+        manifestTag.rel = 'manifest';
+        manifestTag.href = manifestURL;
+        document.head.appendChild(manifestTag);
+
+        // Service Worker Virtual
+        const swCode = `self.addEventListener('fetch', function(e){});`;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        const swURL = URL.createObjectURL(swBlob);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swURL);
+        }
+
+        // --- 2. LÓGICA DE INSTALACIÓN ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'inline-block';
+        });
+
+        document.getElementById('install-btn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
+                document.getElementById('install-btn').style.display = 'none';
+            }
+        });
+
+        // --- 3. LÓGICA DE FIREBASE ---
         const q = query(collection(db, "enlaces"), orderBy("creado", "asc"));
-        
         onSnapshot(q, (snapshot) => {
             const container = document.getElementById('links-container');
-            container.innerHTML = ""; // Limpiar lista
-
-            if (snapshot.empty) {
-                container.innerHTML = "<p>No hay enlaces. ¡Agrega uno abajo!</p>";
-            }
-
+            container.innerHTML = "";
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 const id = docSnap.id;
-
-                // Crear HTML
                 const card = document.createElement('div');
                 card.className = 'link-card';
-                
-                // Icono y Texto son clickeables y llevan al link
                 card.innerHTML = `
                     <a href="${data.url}" target="_blank" style="display:flex; align-items:center; width:100%; text-decoration:none; color:white;">
                         <i class="${data.icono} link-icon"></i>
@@ -247,57 +257,31 @@
                     </a>
                     <button class="delete-btn" onclick="eliminar('${id}')"><i class="fas fa-trash"></i></button>
                 `;
-                
                 container.appendChild(card);
             });
         });
 
-        // 2. FUNCIÓN PARA AGREGAR (Crear)
         window.agregarEnlace = async () => {
             const titulo = document.getElementById('titulo').value;
             const url = document.getElementById('url').value;
             const icono = document.getElementById('icono').value;
-            const btn = document.querySelector('.save-btn');
+            if (!titulo || !url) return;
+            await addDoc(collection(db, "enlaces"), {
+                titulo, url, icono, creado: serverTimestamp()
+            });
+            document.getElementById('titulo').value = "";
+            document.getElementById('url').value = "";
+            toggleAdmin();
+        };
 
-            if (!titulo || !url) return alert("Por favor escribe un título y un link");
-
-            try {
-                btn.innerText = "Guardando...";
-                
-                // Esto CREA la colección 'enlaces' automáticamente si no existe
-                await addDoc(collection(db, "enlaces"), {
-                    titulo: titulo,
-                    url: url,
-                    icono: icono,
-                    creado: serverTimestamp() // Para ordenar por fecha de creación
-                });
-
-                // Limpiar formulario
-                document.getElementById('titulo').value = "";
-                document.getElementById('url').value = "";
-                btn.innerText = "GUARDAR ENLACE";
-                alert("¡Enlace guardado con éxito!");
-
-            } catch (e) {
-                console.error("Error: ", e);
-                alert("Error al guardar. Revisa la consola o las reglas de Firebase.");
-                btn.innerText = "GUARDAR ENLACE";
-            }
-        }
-
-        // 3. FUNCIÓN PARA ELIMINAR (Borrar)
-        // La exponemos a window para poder llamarla desde el HTML
         window.eliminar = async (id) => {
-            if(confirm("¿Seguro que quieres borrar este enlace?")) {
-                await deleteDoc(doc(db, "enlaces", id));
-            }
-        }
+            if(confirm("¿Borrar enlace?")) await deleteDoc(doc(db, "enlaces", id));
+        };
 
-        // 4. MOSTRAR/OCULTAR ADMIN
         window.toggleAdmin = () => {
-            const panel = document.getElementById('admin-panel');
-            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
-        }
+            const p = document.getElementById('admin-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        };
     </script>
 </body>
 </html>
