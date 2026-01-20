@@ -32,11 +32,12 @@
             min-height: 100vh;
             padding: env(safe-area-inset-top) 10px 80px 10px; /* Padding bottom extra para el movil */
             overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
         .container {
             width: 95%;
-            max-width: 1200px; /* Más ancho para PC */
+            max-width: 1200px;
             text-align: center;
             margin-top: 3vh;
             position: relative;
@@ -52,6 +53,7 @@
             text-transform: uppercase;
             line-height: 1;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transition: color 0.5s ease;
         }
 
         .subtitle {
@@ -86,11 +88,12 @@
 
         .tool-btn:hover, .tool-btn.active {
             background: var(--primary);
-            color: #000;
+            color: #000; /* Texto oscuro para contraste con color primario brillante */
             border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
         }
 
-        /* BOTÓN INSTALAR */
+        /* BOTÓN INSTALAR PWA */
         #install-btn {
             display: none;
             background: var(--primary);
@@ -139,6 +142,7 @@
             object-fit: contain;
             margin-right: 15px;
             filter: drop-shadow(0 0 2px var(--primary));
+            transition: transform 0.2s;
         }
 
         .link-text {
@@ -206,7 +210,7 @@
             overflow: hidden;
             /* Resize CSS Nativo */
             resize: both; 
-            overflow: auto; /* Necesario para que funcione resize */
+            overflow: auto; 
             min-width: 300px;
             min-height: 400px;
         }
@@ -236,7 +240,7 @@
             position: relative;
             background: white;
             overflow: hidden;
-            height: 100%; /* Llenar espacio restante */
+            height: 100%;
         }
         
         iframe {
@@ -310,14 +314,35 @@
         #theme-modal {
             display: none;
             position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.8); z-index: 10000;
+            background: rgba(0,0,0,0.85); z-index: 10000;
             justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
         }
         .theme-content {
-            background: #222; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--primary);
+            background: #222; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--primary);
+            max-width: 90%; width: 400px;
+        }
+        .theme-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
         .theme-option {
-            display: inline-block; width: 40px; height: 40px; border-radius: 50%; margin: 5px; cursor: pointer; border: 2px solid #555;
+            width: 50px; height: 50px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            border: 3px solid #444;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+        }
+        .theme-option:hover {
+            transform: scale(1.1);
+            border-color: #fff;
+        }
+        .theme-label {
+            display: block; font-size: 0.75rem; color: #ccc; margin-top: 5px;
         }
     </style>
 </head>
@@ -330,10 +355,10 @@
         <button id="install-btn"><i class="fas fa-download"></i> INSTALAR APP</button>
 
         <div class="toolbar">
-            <button class="tool-btn active" onclick="cambiarVista('view-list')" title="Lista"><i class="fas fa-list"></i></button>
-            <button class="tool-btn" onclick="cambiarVista('view-columns')" title="3 Columnas"><i class="fas fa-columns"></i></button>
-            <button class="tool-btn" onclick="cambiarVista('view-mosaic')" title="Mosaico"><i class="fas fa-th-large"></i></button>
-            <button class="tool-btn" onclick="cambiarVista('view-gallery')" title="Galería"><i class="fas fa-images"></i></button>
+            <button class="tool-btn active" onclick="usuarioCambiaVista('view-list')" title="Lista"><i class="fas fa-list"></i></button>
+            <button class="tool-btn" onclick="usuarioCambiaVista('view-columns')" title="3 Columnas"><i class="fas fa-columns"></i></button>
+            <button class="tool-btn" onclick="usuarioCambiaVista('view-mosaic')" title="Mosaico"><i class="fas fa-th-large"></i></button>
+            <button class="tool-btn" onclick="usuarioCambiaVista('view-gallery')" title="Galería"><i class="fas fa-images"></i></button>
             <button class="tool-btn" onclick="mostrarTemas()" title="Temas"><i class="fas fa-palette"></i></button>
         </div>
 
@@ -382,19 +407,65 @@
 
     <div id="theme-modal" onclick="this.style.display='none'">
         <div class="theme-content" onclick="event.stopPropagation()">
-            <h3>Elige un Tema</h3>
-            <div class="theme-option" style="background:#FF00FF;" onclick="setTheme('#FF00FF', '#000000', '#121212', '#fff')"></div>
-            <div class="theme-option" style="background:#00FFFF;" onclick="setTheme('#00FFFF', '#001a1a', '#0a2a2a', '#ccffff')"></div>
-            <div class="theme-option" style="background:#FF0000;" onclick="setTheme('#FF0000', '#1a0000', '#2a0505', '#ffcccc')"></div>
-            <div class="theme-option" style="background:#00FF00;" onclick="setTheme('#00FF00', '#000000', '#051a05', '#ccffcc')"></div>
-            <div class="theme-option" style="background:#ffffff;" onclick="setTheme('#000000', '#f0f0f0', '#ffffff', '#000000')"></div>
+            <h3 style="color: var(--primary);">Elige un Estilo</h3>
+            <div class="theme-grid">
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #FF00FF, #000);" 
+                         onclick="usuarioCambiaTema('#FF00FF', '#000000', '#121212', '#fff')"></div>
+                    <span class="theme-label">Neon Pink</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #00FFFF, #001a1a);" 
+                         onclick="usuarioCambiaTema('#00FFFF', '#001a1a', '#0a2a2a', '#ccffff')"></div>
+                    <span class="theme-label">Cyber Cyan</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #FF0000, #1a0000);" 
+                         onclick="usuarioCambiaTema('#FF0000', '#1a0000', '#2a0505', '#ffcccc')"></div>
+                    <span class="theme-label">Red Hell</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #00FF00, #000);" 
+                         onclick="usuarioCambiaTema('#00FF00', '#000000', '#051a05', '#ccffcc')"></div>
+                    <span class="theme-label">Matrix</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #D4AF37, #111);" 
+                         onclick="usuarioCambiaTema('#D4AF37', '#0a0a00', '#1c1c10', '#fff8e1')"></div>
+                    <span class="theme-label">Gold Lux</span>
+                </div>
+
+                 <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #9D00FF, #1a002a);" 
+                         onclick="usuarioCambiaTema('#9D00FF', '#120024', '#240040', '#eecbff')"></div>
+                    <span class="theme-label">Purple</span>
+                </div>
+
+                <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #ffffff, #ccc);" 
+                         onclick="usuarioCambiaTema('#000000', '#f0f0f0', '#ffffff', '#000000')"></div>
+                    <span class="theme-label">Light Mode</span>
+                </div>
+
+                 <div style="text-align:center;">
+                    <div class="theme-option" style="background:linear-gradient(45deg, #0077be, #001f3f);" 
+                         onclick="usuarioCambiaTema('#00a8ff', '#000f1f', '#001933', '#d6eaff')"></div>
+                    <span class="theme-label">Deep Sea</span>
+                </div>
+            </div>
+            <button onclick="document.getElementById('theme-modal').style.display='none'" style="margin-top:20px; background:transparent; border:1px solid #666; color:#fff; padding:5px 15px; border-radius:5px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, updateDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, updateDoc, setDoc, doc, query, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+        // CONFIGURACIÓN
         const REPO_URL = "https://raw.githubusercontent.com/sweaters-liliana/system_viva_rouss/refs/heads/main/"; 
         const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/7794/7794505.png";
         const PIN_SECRET = "13524680";
@@ -441,7 +512,109 @@
             }
         });
 
-        // --- FIREBASE: CARGAR ENLACES ---
+        // ==========================================================
+        // SISTEMA DE CONFIGURACIÓN GLOBAL (PERSISTENCIA DE TEMAS Y VISTAS)
+        // ==========================================================
+        
+        // Referencia al documento de configuración global
+        const configRef = doc(db, "config", "global");
+
+        // Escuchar cambios en la configuración (Tema/Vista) desde Firebase en tiempo real
+        onSnapshot(configRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                // Aplicar tema si existe en DB
+                if (data.tema) {
+                    aplicarTemaVisual(data.tema.primary, data.tema.bg, data.tema.card, data.tema.text);
+                }
+                
+                // Aplicar vista si existe en DB
+                if (data.vista) {
+                    aplicarVistaVisual(data.vista);
+                }
+            } else {
+                // Si no existe configuración, crearla por defecto (opcional)
+                console.log("Configuración no encontrada, usando defaults localmente.");
+            }
+        });
+
+        // Función que SÓLO aplica cambios visuales del tema (sin guardar)
+        function aplicarTemaVisual(primary, bg, card, text) {
+            const root = document.documentElement;
+            root.style.setProperty('--primary', primary);
+            root.style.setProperty('--bg-color', bg);
+            // Ajustar gradiente según si es claro u oscuro
+            if(bg === '#f0f0f0') {
+                 root.style.setProperty('--bg-gradient', 'linear-gradient(to bottom, #ffffff, #e0e0e0)');
+                 root.style.setProperty('--border-color', '#ccc');
+            } else {
+                 root.style.setProperty('--bg-gradient', `radial-gradient(circle at top, #2a2a2a 0%, ${bg} 100%)`);
+                 root.style.setProperty('--border-color', '#333');
+            }
+            root.style.setProperty('--card-bg', card);
+            root.style.setProperty('--text-color', text);
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', primary);
+        }
+
+        // Función que SÓLO aplica cambios visuales de la vista (sin guardar)
+        function aplicarVistaVisual(claseVista) {
+            const container = document.getElementById('links-container');
+            container.className = ""; // Limpiar clases anteriores
+            container.id = "links-container"; // Asegurar ID
+            container.classList.add(claseVista); // Añadir nueva
+
+            // Actualizar botones activos en la UI
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            if(claseVista === 'view-list') document.querySelector('.toolbar button:nth-child(1)').classList.add('active');
+            if(claseVista === 'view-columns') document.querySelector('.toolbar button:nth-child(2)').classList.add('active');
+            if(claseVista === 'view-mosaic') document.querySelector('.toolbar button:nth-child(3)').classList.add('active');
+            if(claseVista === 'view-gallery') document.querySelector('.toolbar button:nth-child(4)').classList.add('active');
+        }
+
+        // ----------------------------------------------------------
+        // ACCIONES DEL USUARIO (Guardan en DB)
+        // ----------------------------------------------------------
+
+        // Usuario cambia el tema -> Se guarda en Firestore
+        window.usuarioCambiaTema = async (primary, bg, card, text) => {
+            // Aplicación optimista (inmediata)
+            aplicarTemaVisual(primary, bg, card, text);
+            document.getElementById('theme-modal').style.display = 'none';
+
+            // Guardar en DB
+            try {
+                await setDoc(configRef, { 
+                    tema: { primary, bg, card, text } 
+                }, { merge: true });
+            } catch (e) {
+                console.error("Error guardando tema:", e);
+            }
+        };
+
+        // Usuario cambia la vista -> Se guarda en Firestore
+        window.usuarioCambiaVista = async (claseVista) => {
+            // Aplicación optimista
+            aplicarVistaVisual(claseVista);
+
+            // Guardar en DB
+            try {
+                await setDoc(configRef, { 
+                    vista: claseVista 
+                }, { merge: true });
+            } catch (e) {
+                console.error("Error guardando vista:", e);
+            }
+        };
+
+        window.mostrarTemas = () => {
+            document.getElementById('theme-modal').style.display = 'flex';
+        };
+
+
+        // ==========================================================
+        // LÓGICA DE ENLACES (CRUD)
+        // ==========================================================
         const q = query(collection(db, "enlaces"), orderBy("creado", "asc"));
         
         onSnapshot(q, (snapshot) => {
@@ -511,8 +684,7 @@
         window.zoomOut = () => { if(currentZoom > 0.2) currentZoom -= 0.1; actualizarZoom(); };
         
         function actualizarZoom() {
-            // Aplicamos zoom al iframe. Nota: zoom no es estándar en Firefox, usamos transform scale
-            // pero para iframes 'zoom' css a veces funciona mejor en Chrome. Usaremos scale para compatibilidad.
+            // Zoom via CSS Transform
             winIframe.style.transform = `scale(${currentZoom})`;
             winIframe.style.width = `${100 / currentZoom}%`;
             winIframe.style.height = `${100 / currentZoom}%`;
@@ -523,7 +695,7 @@
         let isDragging = false, startX, startY, initialLeft, initialTop;
 
         winHeader.onmousedown = (e) => {
-            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return; // No arrastrar si click en botones
+            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return; 
             if(winOverlay.classList.contains('maximized')) return;
             
             isDragging = true;
@@ -557,7 +729,6 @@
 
         function elementDragTouch(e) {
             if (!isDragging) return;
-            // e.preventDefault(); // A veces bloquea scroll
             winOverlay.style.left = (initialLeft + e.touches[0].clientX - startX) + "px";
             winOverlay.style.top = (initialTop + e.touches[0].clientY - startY) + "px";
         }
@@ -577,23 +748,19 @@
 
         window.toggleAdmin = () => {
             const p = document.getElementById('admin-panel');
-            // Si está oculto, pedir PIN para abrirlo si es la primera vez o resetear formulario
             if (p.style.display === 'none' || p.style.display === '') {
-                 // Resetear formulario a modo "Crear"
                  document.getElementById('edit-id').value = "";
                  document.getElementById('titulo').value = "";
                  document.getElementById('url').value = "";
                  document.getElementById('nombreIcono').value = "";
                  document.getElementById('btn-guardar').innerText = "GUARDAR";
                  p.style.display = 'block';
-                 // Scroll hacia abajo
                  p.scrollIntoView({behavior: "smooth"});
             } else {
                 p.style.display = 'none';
             }
         };
 
-        // Borrar con PIN
         window.intentarBorrar = (id) => {
             pedirPin(async () => {
                 if(confirm("¿Seguro que quieres borrar este enlace?")) {
@@ -602,7 +769,6 @@
             });
         };
 
-        // Editar con PIN
         window.iniciarEdicion = (id, titulo, url, icono) => {
             pedirPin(() => {
                 const p = document.getElementById('admin-panel');
@@ -627,16 +793,13 @@
             const data = { titulo, url, nombreIcono, creado: serverTimestamp() };
 
             if (id) {
-                // Actualizar existente
-                delete data.creado; // No cambiar fecha creación
+                delete data.creado; 
                 await updateDoc(doc(db, "enlaces", id), data);
                 alert("Actualizado correctamente");
             } else {
-                // Crear nuevo
                 await addDoc(collection(db, "enlaces"), data);
             }
             
-            // Limpiar y cerrar
             document.getElementById('titulo').value = "";
             document.getElementById('url').value = "";
             document.getElementById('nombreIcono').value = "";
@@ -644,47 +807,6 @@
             document.getElementById('admin-panel').style.display = 'none';
         };
 
-
-        // --- VISTAS Y TEMAS ---
-        window.cambiarVista = (claseVista) => {
-            const container = document.getElementById('links-container');
-            // Remover todas las clases de vista
-            container.classList.remove('view-list', 'view-columns', 'view-mosaic', 'view-gallery');
-            // Agregar la seleccionada
-            container.classList.add(claseVista);
-
-            // Actualizar botones activos
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-            // (Simple lógica visual, en prod se haría mejor buscando por target)
-            if(claseVista === 'view-list') document.querySelector('.toolbar button:nth-child(1)').classList.add('active');
-            if(claseVista === 'view-columns') document.querySelector('.toolbar button:nth-child(2)').classList.add('active');
-            if(claseVista === 'view-mosaic') document.querySelector('.toolbar button:nth-child(3)').classList.add('active');
-            if(claseVista === 'view-gallery') document.querySelector('.toolbar button:nth-child(4)').classList.add('active');
-        };
-
-        window.mostrarTemas = () => {
-            document.getElementById('theme-modal').style.display = 'flex';
-        };
-
-        window.setTheme = (primary, bg, card, text) => {
-            const root = document.documentElement;
-            root.style.setProperty('--primary', primary);
-            root.style.setProperty('--bg-color', bg);
-            // Ajustar gradiente según si es claro u oscuro
-            if(bg === '#f0f0f0') {
-                 root.style.setProperty('--bg-gradient', 'linear-gradient(to bottom, #ffffff, #e0e0e0)');
-                 root.style.setProperty('--border-color', '#ccc');
-            } else {
-                 root.style.setProperty('--bg-gradient', `radial-gradient(circle at top, #2a2a2a 0%, ${bg} 100%)`);
-                 root.style.setProperty('--border-color', '#333');
-            }
-            root.style.setProperty('--card-bg', card);
-            root.style.setProperty('--text-color', text);
-            document.getElementById('theme-modal').style.display = 'none';
-            
-            // Actualizar color de la PWA
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', primary);
-        };
     </script>
 </body>
 </html>
