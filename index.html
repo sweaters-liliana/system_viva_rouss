@@ -6,145 +6,318 @@
     <meta name="theme-color" content="#FF00FF">
     <title>VIVA ROUSS by Liliana</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dancing+Script:wght@700&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --fucsia: #FF00FF;
-            --negro-mate: #121212;
-            --negro-puro: #000000;
+            /* TEMA POR DEFECTO: NEON */
+            --primary: #FF00FF;
+            --bg-color: #000000;
+            --bg-gradient: radial-gradient(circle at top, #1a1a1a 0%, #000000 100%);
+            --card-bg: #121212;
+            --text-color: #ffffff;
+            --border-color: #333;
         }
 
         body {
-            background-color: var(--negro-puro);
-            background-image: radial-gradient(circle at top, #1a1a1a 0%, #000000 100%);
-            color: #ffffff;
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: env(safe-area-inset-top) 20px 40px 20px;
+            padding: env(safe-area-inset-top) 10px 80px 10px; /* Padding bottom extra para el movil */
+            overflow-x: hidden;
         }
 
         .container {
-            width: 100%;
-            max-width: 450px;
+            width: 95%;
+            max-width: 1200px; /* Más ancho para PC */
             text-align: center;
-            margin-top: 5vh;
+            margin-top: 3vh;
+            position: relative;
+            z-index: 1;
         }
 
+        /* HEADER */
         h1 {
             font-family: 'Black Ops One', cursive;
-            font-size: clamp(3rem, 12vw, 4.5rem);
-            color: var(--fucsia);
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: var(--primary);
             margin: 0;
             text-transform: uppercase;
             line-height: 1;
-            text-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
         .subtitle {
             font-family: 'Dancing Script', cursive;
-            font-size: clamp(1.4rem, 6vw, 1.8rem);
-            color: #ffffff;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: var(--text-color);
             display: block;
             text-align: right;
-            margin-top: -5px;
-            margin-bottom: 40px;
-            padding-right: 15px;
-            font-weight: 700;
+            max-width: 500px;
+            margin: -5px auto 20px auto;
+            padding-right: 20px;
         }
 
+        /* BARRA DE HERRAMIENTAS (Vistas y Temas) */
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        /* BOTÓN INSTALAR */
         #install-btn {
             display: none;
-            background: var(--fucsia);
-            color: white;
+            background: var(--primary);
+            color: #fff;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 50px;
             font-weight: bold;
-            margin-bottom: 30px;
+            margin: 10px auto;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 15px var(--primary);
             animation: bounce 2s infinite;
         }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        /* CONTENEDOR DE LINKS (GRID SYSTEM) */
+        #links-container {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
         }
 
-        /* Estilo de Tarjetas con PNG */
+        /* ESTILOS DE TARJETA */
         .link-card {
-            background: var(--negro-mate);
-            border: 1px solid #333;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 15px;
-            padding: 10px 20px;
-            margin-bottom: 16px;
+            padding: 10px;
             display: flex;
             align-items: center;
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
             position: relative;
-            min-height: 70px; /* Altura mínima para que quepa el icono */
+            transition: 0.3s;
+            overflow: hidden;
         }
 
         .link-card:hover {
-            border-color: var(--fucsia);
-            transform: scale(1.02);
-            background: #1a1a1a;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        /* CONFIGURACIÓN DE LOS ICONOS PNG */
         .custom-icon {
             width: 45px;
             height: 45px;
-            object-fit: contain; /* Asegura que el PNG no se deforme */
+            object-fit: contain;
             margin-right: 15px;
-            filter: drop-shadow(0 0 5px rgba(255,0,255,0.3)); /* Brillo suave al icono */
+            filter: drop-shadow(0 0 2px var(--primary));
         }
 
         .link-text {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
             flex-grow: 1;
             text-align: left;
+            word-break: break-word;
+            color: var(--text-color);
         }
 
-        .delete-btn {
-            background: none; border: none; color: #444; padding: 10px; cursor: pointer; z-index: 10;
+        /* BOTONES DE ACCIÓN (Editar/Borrar) */
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-left: 10px;
         }
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px;
+        }
+        .action-btn:hover { color: var(--primary); }
         .delete-btn:hover { color: #ff4444; }
 
+        /* --- MODOS DE VISTA (Clases dinámicas) --- */
+        
+        /* 1. Lista (Default) */
+        .view-list { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+
+        /* 2. Columnas (3) */
+        .view-columns { grid-template-columns: repeat(3, 1fr); }
+        @media (max-width: 768px) { .view-columns { grid-template-columns: repeat(2, 1fr); } }
+
+        /* 3. Mosaico (Masonry Simulado) */
+        .view-mosaic { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        .view-mosaic .link-card { flex-direction: column; text-align: center; padding: 20px 10px; }
+        .view-mosaic .custom-icon { margin: 0 0 10px 0; width: 60px; height: 60px; }
+        .view-mosaic .link-text { text-align: center; font-size: 0.9rem; }
+        .view-mosaic .card-actions { flex-direction: row; margin-left: 0; margin-top: 10px; justify-content: center;}
+
+        /* 4. Galería */
+        .view-gallery { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        .view-gallery .link-card { height: 180px; flex-direction: column; justify-content: center; background-size: cover; position: relative; }
+        .view-gallery .custom-icon { width: 80px; height: 80px; margin-bottom: 10px; }
+        
+        /* --- VENTANA FLOTANTE (OVERLAY) --- */
+        #window-overlay {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 70%;
+            background: #1e1e1e;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            z-index: 9999;
+            flex-direction: column;
+            overflow: hidden;
+            /* Resize CSS Nativo */
+            resize: both; 
+            overflow: auto; /* Necesario para que funcione resize */
+            min-width: 300px;
+            min-height: 400px;
+        }
+
+        /* Cabecera de la ventana (Drag Handle) */
+        .window-header {
+            background: #000;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-bottom: 1px solid var(--primary);
+            user-select: none;
+        }
+
+        .window-title { font-weight: bold; color: var(--primary); font-size: 0.9rem; }
+        
+        .window-controls button {
+            background: none; border: none; color: white; margin-left: 5px; cursor: pointer; font-size: 1rem;
+        }
+        .window-controls button:hover { color: var(--primary); }
+
+        /* Contenido Iframe */
+        .window-content {
+            flex-grow: 1;
+            position: relative;
+            background: white;
+            overflow: hidden;
+            height: 100%; /* Llenar espacio restante */
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform-origin: 0 0;
+            transition: transform 0.2s;
+        }
+
+        /* Footer de la ventana (Zoom) */
+        .window-footer {
+            background: #111;
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #333;
+        }
+        .zoom-controls button {
+            background: #333; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+        }
+
+        /* Estado minimizado */
+        #window-overlay.minimized {
+            height: 40px !important;
+            width: 200px !important;
+            resize: none;
+            overflow: hidden;
+            top: auto !important;
+            bottom: 10px;
+            left: 10px !important;
+        }
+        #window-overlay.minimized .window-content, 
+        #window-overlay.minimized .window-footer { display: none; }
+
+        /* Estado maximizado */
+        #window-overlay.maximized {
+            top: 0 !important; left: 0 !important;
+            width: 100% !important; height: 100% !important;
+            border-radius: 0; resize: none;
+        }
+
+        /* --- ADMIN PANEL --- */
         #admin-panel {
             display: none;
-            background: #0a0a0a;
-            border: 1px dashed var(--fucsia);
+            background: var(--card-bg);
+            border: 1px dashed var(--primary);
             padding: 20px;
             border-radius: 15px;
             margin-top: 20px;
             text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
         input, .save-btn {
             width: 100%; padding: 12px; margin-bottom: 12px;
             border-radius: 8px; border: 1px solid #333;
-            background: #1a1a1a; color: white; box-sizing: border-box;
+            background: #000; color: white; box-sizing: border-box;
+        }
+        .save-btn {
+            background: var(--primary); border: none; font-family: 'Black Ops One';
+            font-size: 1.1rem; cursor: pointer; margin-top: 10px; color: #000;
+        }
+        #admin-toggle {
+            margin-top: 30px; background: none; border: none; color: #333; cursor: pointer;
         }
         
-        label { font-size: 0.8rem; color: #888; margin-bottom: 5px; display: block; }
-
-        .save-btn {
-            background: var(--fucsia); border: none; font-family: 'Black Ops One';
-            font-size: 1.1rem; cursor: pointer; margin-top: 10px;
+        /* Modal Temas */
+        #theme-modal {
+            display: none;
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.8); z-index: 10000;
+            justify-content: center; align-items: center;
         }
-
-        #admin-toggle {
-            margin-top: 50px; background: none; border: none; color: #222; cursor: pointer;
+        .theme-content {
+            background: #222; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--primary);
+        }
+        .theme-option {
+            display: inline-block; width: 40px; height: 40px; border-radius: 50%; margin: 5px; cursor: pointer; border: 2px solid #555;
         }
     </style>
 </head>
@@ -156,46 +329,75 @@
 
         <button id="install-btn"><i class="fas fa-download"></i> INSTALAR APP</button>
 
-        <div id="links-container">
+        <div class="toolbar">
+            <button class="tool-btn active" onclick="cambiarVista('view-list')" title="Lista"><i class="fas fa-list"></i></button>
+            <button class="tool-btn" onclick="cambiarVista('view-columns')" title="3 Columnas"><i class="fas fa-columns"></i></button>
+            <button class="tool-btn" onclick="cambiarVista('view-mosaic')" title="Mosaico"><i class="fas fa-th-large"></i></button>
+            <button class="tool-btn" onclick="cambiarVista('view-gallery')" title="Galería"><i class="fas fa-images"></i></button>
+            <button class="tool-btn" onclick="mostrarTemas()" title="Temas"><i class="fas fa-palette"></i></button>
+        </div>
+
+        <div id="links-container" class="view-list">
             </div>
 
         <button id="admin-toggle" onclick="toggleAdmin()">⚙️</button>
 
         <div id="admin-panel">
-            <h2 style="color:var(--fucsia); font-size: 1.2rem; margin-top:0; text-align:center;">ADMINISTRAR</h2>
-            
-            <label>1. Título del Botón</label>
+            <h2 style="color:var(--primary); font-size: 1.2rem; margin-top:0; text-align:center;">ADMINISTRAR</h2>
+            <input type="hidden" id="edit-id"> <label>1. Título</label>
             <input type="text" id="titulo" placeholder="Ej: Mi Instagram">
             
             <label>2. Enlace (Link)</label>
             <input type="url" id="url" placeholder="https://...">
 
-            <label>3. Nombre exacto del PNG (Opcional)</label>
-            <input type="text" id="nombreIcono" placeholder="Ej: camara (Déjalo vacío para automático)">
-            <small style="color:#555; display:block; margin-top:-10px; margin-bottom:10px; font-size:0.7rem;">
-                *Si lo dejas vacío, buscaré una imagen llamada "mi_instagram.png" en tu GitHub.
-            </small>
+            <label>3. Nombre exacto PNG (Opcional)</label>
+            <input type="text" id="nombreIcono" placeholder="Ej: camara">
             
-            <button class="save-btn" onclick="agregarEnlace()">GUARDAR</button>
+            <button class="save-btn" id="btn-guardar" onclick="guardarEnlace()">GUARDAR</button>
+            <button onclick="toggleAdmin()" style="width:100%; background:none; border:none; color:#888; margin-top:5px; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="window-overlay">
+        <div class="window-header" id="window-header">
+            <span class="window-title" id="win-title">Navegador</span>
+            <div class="window-controls">
+                <button onclick="minWindow()"><i class="fas fa-minus"></i></button>
+                <button onclick="maxWindow()"><i class="fas fa-expand"></i></button>
+                <button onclick="closeWindow()"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div class="window-content">
+            <iframe id="win-iframe" src=""></iframe>
+        </div>
+        <div class="window-footer">
+            <a id="external-link" href="#" target="_blank" style="color: #888; text-decoration: none; font-size: 0.8rem;"><i class="fas fa-external-link-alt"></i> Abrir fuera</a>
+            <div class="zoom-controls">
+                <button onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
+                <span id="zoom-level" style="font-size:0.8rem; color:#888; margin:0 5px;">100%</span>
+                <button onclick="zoomIn()"><i class="fas fa-search-plus"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="theme-modal" onclick="this.style.display='none'">
+        <div class="theme-content" onclick="event.stopPropagation()">
+            <h3>Elige un Tema</h3>
+            <div class="theme-option" style="background:#FF00FF;" onclick="setTheme('#FF00FF', '#000000', '#121212', '#fff')"></div>
+            <div class="theme-option" style="background:#00FFFF;" onclick="setTheme('#00FFFF', '#001a1a', '#0a2a2a', '#ccffff')"></div>
+            <div class="theme-option" style="background:#FF0000;" onclick="setTheme('#FF0000', '#1a0000', '#2a0505', '#ffcccc')"></div>
+            <div class="theme-option" style="background:#00FF00;" onclick="setTheme('#00FF00', '#000000', '#051a05', '#ccffcc')"></div>
+            <div class="theme-option" style="background:#ffffff;" onclick="setTheme('#000000', '#f0f0f0', '#ffffff', '#000000')"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, updateDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // ==========================================
-        //  CONFIGURACIÓN DE TUS ICONOS (GITHUB)
-        // ==========================================
-        // Cambia esto por la URL de tu carpeta en GitHub donde subirás los PNGs.
-        // Asegúrate de usar el enlace "raw" o de GitHub Pages.
-        // Ejemplo: "https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/iconos/"
-        // IMPORTANTE: Deja la barra "/" al final.
-        
         const REPO_URL = "https://raw.githubusercontent.com/sweaters-liliana/system_viva_rouss/refs/heads/main/"; 
-        const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/7794/7794505.png"; // Icono estrella por si falla
-
-        // ==========================================
+        const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/7794/7794505.png";
+        const PIN_SECRET = "13524680";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqHgV4vDat1-VmZfKbiPg7nuiX-ROcexw",
@@ -210,7 +412,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- MANIFIESTO Y SW ---
+        // --- PWA MANIFIESTO ---
         const manifest = {
             "name": "VIVA ROUSS", "short_name": "ROUSS", "start_url": ".", "display": "standalone",
             "background_color": "#000000", "theme_color": "#FF00FF",
@@ -223,12 +425,23 @@
             navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('fetch', function(e){});`], {type: 'application/javascript'})));
         }
 
-        // --- INSTALACIÓN ---
+        // --- PWA INSTALACIÓN ---
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'inline-block'; });
-        document.getElementById('install-btn').addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; document.getElementById('install-btn').style.display = 'none'; }});
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+            document.getElementById('install-btn').style.display = 'inline-block'; 
+        });
+        document.getElementById('install-btn').addEventListener('click', async () => { 
+            if (deferredPrompt) { 
+                deferredPrompt.prompt(); 
+                const { outcome } = await deferredPrompt.userChoice;
+                if(outcome === 'accepted') document.getElementById('install-btn').style.display = 'none';
+                deferredPrompt = null; 
+            }
+        });
 
-        // --- FIREBASE Y LÓGICA DE ICONOS ---
+        // --- FIREBASE: CARGAR ENLACES ---
         const q = query(collection(db, "enlaces"), orderBy("creado", "asc"));
         
         onSnapshot(q, (snapshot) => {
@@ -239,67 +452,238 @@
                 const data = docSnap.data();
                 const id = docSnap.id;
 
-                // 1. Determinar el nombre del archivo PNG
-                let iconFileName;
-
-                if (data.nombreIcono && data.nombreIcono.trim() !== "") {
-                    // Si el usuario especificó un nombre manual, úsalo (ej: "camara")
-                    iconFileName = data.nombreIcono.trim();
-                } else {
-                    // LÓGICA AUTOMÁTICA: Convertir Título a nombre de archivo
-                    // "Mi Instagram" -> "mi_instagram"
-                    iconFileName = data.titulo
-                        .toLowerCase()
-                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar acentos
-                        .replace(/ /g, "_") // Espacios por guiones bajos
-                        .replace(/[^a-z0-9_]/g, ""); // Quitar caracteres raros
-                }
-
-                // Asegurar extensión .png (si el usuario no la puso)
+                let iconFileName = data.nombreIcono && data.nombreIcono.trim() !== "" 
+                    ? data.nombreIcono.trim() 
+                    : data.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
+                
                 if (!iconFileName.endsWith('.png')) iconFileName += '.png';
-
                 const finalIconUrl = REPO_URL + iconFileName;
 
                 const card = document.createElement('div');
                 card.className = 'link-card';
+                // El div principal abre la ventana
+                card.onclick = (e) => {
+                    // Evitar abrir ventana si se hizo clic en los botones de editar/borrar
+                    if(e.target.closest('.action-btn')) return;
+                    abrirVentana(data.url, data.titulo);
+                };
+
                 card.innerHTML = `
-                    <a href="${data.url}" target="_blank" style="display:flex; align-items:center; width:100%; text-decoration:none; color:white;">
-                        <img src="${finalIconUrl}" class="custom-icon" onerror="this.onerror=null;this.src='${DEFAULT_ICON}';">
-                        <span class="link-text">${data.titulo}</span>
-                    </a>
-                    <button class="delete-btn" onclick="eliminar('${id}')"><i class="fas fa-trash"></i></button>
+                    <img src="${finalIconUrl}" class="custom-icon" onerror="this.onerror=null;this.src='${DEFAULT_ICON}';">
+                    <span class="link-text">${data.titulo}</span>
+                    <div class="card-actions">
+                        <button class="action-btn edit-btn" onclick="iniciarEdicion('${id}', '${data.titulo}', '${data.url}', '${data.nombreIcono || ''}')"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="intentarBorrar('${id}')"><i class="fas fa-trash"></i></button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
         });
 
-        window.agregarEnlace = async () => {
-            const titulo = document.getElementById('titulo').value;
-            const url = document.getElementById('url').value;
-            const nombreIcono = document.getElementById('nombreIcono').value; // Opcional
+        // --- LÓGICA DE VENTANA FLOTANTE ---
+        const winOverlay = document.getElementById('window-overlay');
+        const winHeader = document.getElementById('window-header');
+        const winIframe = document.getElementById('win-iframe');
+        const winTitle = document.getElementById('win-title');
+        const extLink = document.getElementById('external-link');
+        let currentZoom = 1;
 
-            if (!titulo || !url) return;
-            
-            await addDoc(collection(db, "enlaces"), {
-                titulo, 
-                url, 
-                nombreIcono, // Guardamos lo que escribió (o vacío)
-                creado: serverTimestamp()
-            });
-            
-            document.getElementById('titulo').value = "";
-            document.getElementById('url').value = "";
-            document.getElementById('nombreIcono').value = "";
-            toggleAdmin();
+        window.abrirVentana = (url, titulo) => {
+            winOverlay.style.display = 'flex';
+            winOverlay.classList.remove('minimized');
+            winOverlay.classList.remove('maximized');
+            winIframe.src = url;
+            winTitle.innerText = titulo || 'Navegador';
+            extLink.href = url;
+            currentZoom = 1;
+            actualizarZoom();
         };
 
-        window.eliminar = async (id) => {
-            if(confirm("¿Borrar enlace?")) await deleteDoc(doc(db, "enlaces", id));
+        window.closeWindow = () => {
+            winOverlay.style.display = 'none';
+            winIframe.src = "";
         };
+
+        window.minWindow = () => winOverlay.classList.toggle('minimized');
+        window.maxWindow = () => winOverlay.classList.toggle('maximized');
+
+        window.zoomIn = () => { currentZoom += 0.1; actualizarZoom(); };
+        window.zoomOut = () => { if(currentZoom > 0.2) currentZoom -= 0.1; actualizarZoom(); };
+        
+        function actualizarZoom() {
+            // Aplicamos zoom al iframe. Nota: zoom no es estándar en Firefox, usamos transform scale
+            // pero para iframes 'zoom' css a veces funciona mejor en Chrome. Usaremos scale para compatibilidad.
+            winIframe.style.transform = `scale(${currentZoom})`;
+            winIframe.style.width = `${100 / currentZoom}%`;
+            winIframe.style.height = `${100 / currentZoom}%`;
+            document.getElementById('zoom-level').innerText = Math.round(currentZoom * 100) + "%";
+        }
+
+        // --- ARRASTRAR VENTANA (DRAG) ---
+        let isDragging = false, startX, startY, initialLeft, initialTop;
+
+        winHeader.onmousedown = (e) => {
+            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return; // No arrastrar si click en botones
+            if(winOverlay.classList.contains('maximized')) return;
+            
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialLeft = winOverlay.offsetLeft;
+            initialTop = winOverlay.offsetTop;
+            document.onmousemove = elementDrag;
+            document.onmouseup = stopDrag;
+        };
+
+        // Soporte Touch para arrastrar en movil
+        winHeader.ontouchstart = (e) => {
+             if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+             if(winOverlay.classList.contains('maximized')) return;
+             isDragging = true;
+             startX = e.touches[0].clientX;
+             startY = e.touches[0].clientY;
+             initialLeft = winOverlay.offsetLeft;
+             initialTop = winOverlay.offsetTop;
+             document.ontouchmove = elementDragTouch;
+             document.ontouchend = stopDrag;
+        }
+
+        function elementDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            winOverlay.style.left = (initialLeft + e.clientX - startX) + "px";
+            winOverlay.style.top = (initialTop + e.clientY - startY) + "px";
+        }
+
+        function elementDragTouch(e) {
+            if (!isDragging) return;
+            // e.preventDefault(); // A veces bloquea scroll
+            winOverlay.style.left = (initialLeft + e.touches[0].clientX - startX) + "px";
+            winOverlay.style.top = (initialTop + e.touches[0].clientY - startY) + "px";
+        }
+
+        function stopDrag() { isDragging = false; document.onmousemove = null; document.onmouseup = null; document.ontouchmove = null; document.ontouchend = null; }
+
+
+        // --- SEGURIDAD Y ADMIN ---
+        function pedirPin(callback) {
+            const pin = prompt("🔐 Ingresa el PIN de seguridad:");
+            if (pin === PIN_SECRET) {
+                callback();
+            } else if (pin !== null) {
+                alert("🚫 PIN Incorrecto");
+            }
+        }
 
         window.toggleAdmin = () => {
             const p = document.getElementById('admin-panel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+            // Si está oculto, pedir PIN para abrirlo si es la primera vez o resetear formulario
+            if (p.style.display === 'none' || p.style.display === '') {
+                 // Resetear formulario a modo "Crear"
+                 document.getElementById('edit-id').value = "";
+                 document.getElementById('titulo').value = "";
+                 document.getElementById('url').value = "";
+                 document.getElementById('nombreIcono').value = "";
+                 document.getElementById('btn-guardar').innerText = "GUARDAR";
+                 p.style.display = 'block';
+                 // Scroll hacia abajo
+                 p.scrollIntoView({behavior: "smooth"});
+            } else {
+                p.style.display = 'none';
+            }
+        };
+
+        // Borrar con PIN
+        window.intentarBorrar = (id) => {
+            pedirPin(async () => {
+                if(confirm("¿Seguro que quieres borrar este enlace?")) {
+                    await deleteDoc(doc(db, "enlaces", id));
+                }
+            });
+        };
+
+        // Editar con PIN
+        window.iniciarEdicion = (id, titulo, url, icono) => {
+            pedirPin(() => {
+                const p = document.getElementById('admin-panel');
+                p.style.display = 'block';
+                document.getElementById('edit-id').value = id;
+                document.getElementById('titulo').value = titulo;
+                document.getElementById('url').value = url;
+                document.getElementById('nombreIcono').value = icono;
+                document.getElementById('btn-guardar').innerText = "ACTUALIZAR";
+                p.scrollIntoView({behavior: "smooth"});
+            });
+        };
+
+        window.guardarEnlace = async () => {
+            const id = document.getElementById('edit-id').value;
+            const titulo = document.getElementById('titulo').value;
+            const url = document.getElementById('url').value;
+            const nombreIcono = document.getElementById('nombreIcono').value;
+
+            if (!titulo || !url) return alert("Faltan datos");
+
+            const data = { titulo, url, nombreIcono, creado: serverTimestamp() };
+
+            if (id) {
+                // Actualizar existente
+                delete data.creado; // No cambiar fecha creación
+                await updateDoc(doc(db, "enlaces", id), data);
+                alert("Actualizado correctamente");
+            } else {
+                // Crear nuevo
+                await addDoc(collection(db, "enlaces"), data);
+            }
+            
+            // Limpiar y cerrar
+            document.getElementById('titulo').value = "";
+            document.getElementById('url').value = "";
+            document.getElementById('nombreIcono').value = "";
+            document.getElementById('edit-id').value = "";
+            document.getElementById('admin-panel').style.display = 'none';
+        };
+
+
+        // --- VISTAS Y TEMAS ---
+        window.cambiarVista = (claseVista) => {
+            const container = document.getElementById('links-container');
+            // Remover todas las clases de vista
+            container.classList.remove('view-list', 'view-columns', 'view-mosaic', 'view-gallery');
+            // Agregar la seleccionada
+            container.classList.add(claseVista);
+
+            // Actualizar botones activos
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            // (Simple lógica visual, en prod se haría mejor buscando por target)
+            if(claseVista === 'view-list') document.querySelector('.toolbar button:nth-child(1)').classList.add('active');
+            if(claseVista === 'view-columns') document.querySelector('.toolbar button:nth-child(2)').classList.add('active');
+            if(claseVista === 'view-mosaic') document.querySelector('.toolbar button:nth-child(3)').classList.add('active');
+            if(claseVista === 'view-gallery') document.querySelector('.toolbar button:nth-child(4)').classList.add('active');
+        };
+
+        window.mostrarTemas = () => {
+            document.getElementById('theme-modal').style.display = 'flex';
+        };
+
+        window.setTheme = (primary, bg, card, text) => {
+            const root = document.documentElement;
+            root.style.setProperty('--primary', primary);
+            root.style.setProperty('--bg-color', bg);
+            // Ajustar gradiente según si es claro u oscuro
+            if(bg === '#f0f0f0') {
+                 root.style.setProperty('--bg-gradient', 'linear-gradient(to bottom, #ffffff, #e0e0e0)');
+                 root.style.setProperty('--border-color', '#ccc');
+            } else {
+                 root.style.setProperty('--bg-gradient', `radial-gradient(circle at top, #2a2a2a 0%, ${bg} 100%)`);
+                 root.style.setProperty('--border-color', '#333');
+            }
+            root.style.setProperty('--card-bg', card);
+            root.style.setProperty('--text-color', text);
+            document.getElementById('theme-modal').style.display = 'none';
+            
+            // Actualizar color de la PWA
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', primary);
         };
     </script>
 </body>
