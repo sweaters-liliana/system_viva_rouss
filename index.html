@@ -30,7 +30,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: env(safe-area-inset-top) 10px 80px 10px; /* Padding bottom extra para el movil */
+            padding: env(safe-area-inset-top) 10px 80px 10px;
             overflow-x: hidden;
             transition: background 0.5s ease, color 0.5s ease;
         }
@@ -67,7 +67,7 @@
             padding-right: 20px;
         }
 
-        /* BARRA DE HERRAMIENTAS (Vistas y Temas) */
+        /* BARRA DE HERRAMIENTAS */
         .toolbar {
             display: flex;
             justify-content: center;
@@ -88,7 +88,7 @@
 
         .tool-btn:hover, .tool-btn.active {
             background: var(--primary);
-            color: #000; /* Texto oscuro para contraste con color primario brillante */
+            color: #000;
             border-color: var(--primary);
             box-shadow: 0 0 10px var(--primary);
         }
@@ -128,12 +128,36 @@
             position: relative;
             transition: 0.3s;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .link-card:hover {
             border-color: var(--primary);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* ESTILO PARA ENLACES BLOQUEADOS */
+        .link-card.locked {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+        
+        /* Ícono de candado sobrepuesto */
+        .lock-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: var(--primary);
+            display: none;
+            z-index: 10;
+            text-shadow: 0 0 5px #000;
+        }
+
+        .link-card.locked .lock-indicator {
+            display: block;
         }
 
         .custom-icon {
@@ -160,6 +184,7 @@
             flex-direction: column;
             gap: 5px;
             margin-left: 10px;
+            z-index: 20; /* Por encima del click de la tarjeta */
         }
         .action-btn {
             background: transparent;
@@ -172,28 +197,22 @@
         .action-btn:hover { color: var(--primary); }
         .delete-btn:hover { color: #ff4444; }
 
-        /* --- MODOS DE VISTA (Clases dinámicas) --- */
-        
-        /* 1. Lista (Default) */
+        /* --- MODOS DE VISTA --- */
         .view-list { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
-
-        /* 2. Columnas (3) */
         .view-columns { grid-template-columns: repeat(3, 1fr); }
         @media (max-width: 768px) { .view-columns { grid-template-columns: repeat(2, 1fr); } }
 
-        /* 3. Mosaico (Masonry Simulado) */
         .view-mosaic { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .view-mosaic .link-card { flex-direction: column; text-align: center; padding: 20px 10px; }
         .view-mosaic .custom-icon { margin: 0 0 10px 0; width: 60px; height: 60px; }
         .view-mosaic .link-text { text-align: center; font-size: 0.9rem; }
         .view-mosaic .card-actions { flex-direction: row; margin-left: 0; margin-top: 10px; justify-content: center;}
 
-        /* 4. Galería */
         .view-gallery { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
         .view-gallery .link-card { height: 180px; flex-direction: column; justify-content: center; background-size: cover; position: relative; }
         .view-gallery .custom-icon { width: 80px; height: 80px; margin-bottom: 10px; }
         
-        /* --- VENTANA FLOTANTE (OVERLAY) --- */
+        /* --- VENTANA FLOTANTE --- */
         #window-overlay {
             display: none;
             position: fixed;
@@ -208,14 +227,12 @@
             z-index: 9999;
             flex-direction: column;
             overflow: hidden;
-            /* Resize CSS Nativo */
             resize: both; 
             overflow: auto; 
             min-width: 300px;
             min-height: 400px;
         }
 
-        /* Cabecera de la ventana (Drag Handle) */
         .window-header {
             background: #000;
             padding: 10px;
@@ -234,7 +251,6 @@
         }
         .window-controls button:hover { color: var(--primary); }
 
-        /* Contenido Iframe */
         .window-content {
             flex-grow: 1;
             position: relative;
@@ -251,12 +267,11 @@
             transition: transform 0.2s;
         }
 
-        /* Footer de la ventana (Zoom) */
         .window-footer {
             background: #111;
             padding: 8px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end; /* Alineado a la derecha */
             align-items: center;
             border-top: 1px solid #333;
         }
@@ -264,24 +279,15 @@
             background: #333; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
         }
 
-        /* Estado minimizado */
+        /* Estados de ventana */
         #window-overlay.minimized {
-            height: 40px !important;
-            width: 200px !important;
-            resize: none;
-            overflow: hidden;
-            top: auto !important;
-            bottom: 10px;
-            left: 10px !important;
+            height: 40px !important; width: 200px !important; resize: none; overflow: hidden;
+            top: auto !important; bottom: 10px; left: 10px !important;
         }
         #window-overlay.minimized .window-content, 
         #window-overlay.minimized .window-footer { display: none; }
-
-        /* Estado maximizado */
         #window-overlay.maximized {
-            top: 0 !important; left: 0 !important;
-            width: 100% !important; height: 100% !important;
-            border-radius: 0; resize: none;
+            top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; border-radius: 0; resize: none;
         }
 
         /* --- ADMIN PANEL --- */
@@ -306,10 +312,34 @@
             background: var(--primary); border: none; font-family: 'Black Ops One';
             font-size: 1.1rem; cursor: pointer; margin-top: 10px; color: #000;
         }
-        #admin-toggle {
-            margin-top: 30px; background: none; border: none; color: #333; cursor: pointer;
-        }
         
+        /* BOTON DESARROLLADOR ESQUINA */
+        #dev-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        #dev-toggle:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
         /* Modal Temas */
         #theme-modal {
             display: none;
@@ -322,28 +352,13 @@
             background: #222; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--primary);
             max-width: 90%; width: 400px;
         }
-        .theme-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
+        .theme-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
         .theme-option {
-            width: 50px; height: 50px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            border: 3px solid #444;
-            transition: transform 0.2s, border-color 0.2s;
-            position: relative;
+            width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 3px solid #444;
+            transition: transform 0.2s, border-color 0.2s; position: relative;
         }
-        .theme-option:hover {
-            transform: scale(1.1);
-            border-color: #fff;
-        }
-        .theme-label {
-            display: block; font-size: 0.75rem; color: #ccc; margin-top: 5px;
-        }
+        .theme-option:hover { transform: scale(1.1); border-color: #fff; }
+        .theme-label { display: block; font-size: 0.75rem; color: #ccc; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -365,11 +380,13 @@
         <div id="links-container" class="view-list">
             </div>
 
-        <button id="admin-toggle" onclick="toggleAdmin()">⚙️</button>
+        <button id="dev-toggle" onclick="toggleAdmin()"> &lt;&gt; </button>
 
         <div id="admin-panel">
-            <h2 style="color:var(--primary); font-size: 1.2rem; margin-top:0; text-align:center;">ADMINISTRAR</h2>
-            <input type="hidden" id="edit-id"> <label>1. Título</label>
+            <h2 style="color:var(--primary); font-size: 1.2rem; margin-top:0; text-align:center;">PANEL DESARROLLADOR</h2>
+            <input type="hidden" id="edit-id"> 
+            
+            <label>1. Título</label>
             <input type="text" id="titulo" placeholder="Ej: Mi Instagram">
             
             <label>2. Enlace (Link)</label>
@@ -378,8 +395,11 @@
             <label>3. Nombre exacto PNG (Opcional)</label>
             <input type="text" id="nombreIcono" placeholder="Ej: camara">
             
-            <button class="save-btn" id="btn-guardar" onclick="guardarEnlace()">GUARDAR</button>
-            <button onclick="toggleAdmin()" style="width:100%; background:none; border:none; color:#888; margin-top:5px; cursor:pointer;">Cancelar</button>
+            <label>4. PIN de Acceso (Opcional)</label>
+            <input type="number" id="linkPin" placeholder="Ej: 1234 (Dejar vacío para público)">
+            
+            <button class="save-btn" id="btn-guardar" onclick="guardarEnlace()">GUARDAR DATOS</button>
+            <button onclick="ocultarAdmin()" style="width:100%; background:none; border:none; color:#888; margin-top:5px; cursor:pointer;">Cerrar Panel</button>
         </div>
     </div>
 
@@ -396,7 +416,6 @@
             <iframe id="win-iframe" src=""></iframe>
         </div>
         <div class="window-footer">
-            <a id="external-link" href="#" target="_blank" style="color: #888; text-decoration: none; font-size: 0.8rem;"><i class="fas fa-external-link-alt"></i> Abrir fuera</a>
             <div class="zoom-controls">
                 <button onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
                 <span id="zoom-level" style="font-size:0.8rem; color:#888; margin:0 5px;">100%</span>
@@ -410,50 +429,35 @@
             <h3 style="color: var(--primary);">Elige un Estilo</h3>
             <div class="theme-grid">
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #FF00FF, #000);" 
-                         onclick="usuarioCambiaTema('#FF00FF', '#000000', '#121212', '#fff')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #FF00FF, #000);" onclick="usuarioCambiaTema('#FF00FF', '#000000', '#121212', '#fff')"></div>
                     <span class="theme-label">Neon Pink</span>
                 </div>
-
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #00FFFF, #001a1a);" 
-                         onclick="usuarioCambiaTema('#00FFFF', '#001a1a', '#0a2a2a', '#ccffff')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #00FFFF, #001a1a);" onclick="usuarioCambiaTema('#00FFFF', '#001a1a', '#0a2a2a', '#ccffff')"></div>
                     <span class="theme-label">Cyber Cyan</span>
                 </div>
-
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #FF0000, #1a0000);" 
-                         onclick="usuarioCambiaTema('#FF0000', '#1a0000', '#2a0505', '#ffcccc')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #FF0000, #1a0000);" onclick="usuarioCambiaTema('#FF0000', '#1a0000', '#2a0505', '#ffcccc')"></div>
                     <span class="theme-label">Red Hell</span>
                 </div>
-
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #00FF00, #000);" 
-                         onclick="usuarioCambiaTema('#00FF00', '#000000', '#051a05', '#ccffcc')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #00FF00, #000);" onclick="usuarioCambiaTema('#00FF00', '#000000', '#051a05', '#ccffcc')"></div>
                     <span class="theme-label">Matrix</span>
                 </div>
-
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #D4AF37, #111);" 
-                         onclick="usuarioCambiaTema('#D4AF37', '#0a0a00', '#1c1c10', '#fff8e1')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #D4AF37, #111);" onclick="usuarioCambiaTema('#D4AF37', '#0a0a00', '#1c1c10', '#fff8e1')"></div>
                     <span class="theme-label">Gold Lux</span>
                 </div>
-
                  <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #9D00FF, #1a002a);" 
-                         onclick="usuarioCambiaTema('#9D00FF', '#120024', '#240040', '#eecbff')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #9D00FF, #1a002a);" onclick="usuarioCambiaTema('#9D00FF', '#120024', '#240040', '#eecbff')"></div>
                     <span class="theme-label">Purple</span>
                 </div>
-
                 <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #ffffff, #ccc);" 
-                         onclick="usuarioCambiaTema('#000000', '#f0f0f0', '#ffffff', '#000000')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #ffffff, #ccc);" onclick="usuarioCambiaTema('#000000', '#f0f0f0', '#ffffff', '#000000')"></div>
                     <span class="theme-label">Light Mode</span>
                 </div>
-
                  <div style="text-align:center;">
-                    <div class="theme-option" style="background:linear-gradient(45deg, #0077be, #001f3f);" 
-                         onclick="usuarioCambiaTema('#00a8ff', '#000f1f', '#001933', '#d6eaff')"></div>
+                    <div class="theme-option" style="background:linear-gradient(45deg, #0077be, #001f3f);" onclick="usuarioCambiaTema('#00a8ff', '#000f1f', '#001933', '#d6eaff')"></div>
                     <span class="theme-label">Deep Sea</span>
                 </div>
             </div>
@@ -468,7 +472,8 @@
         // CONFIGURACIÓN
         const REPO_URL = "https://raw.githubusercontent.com/sweaters-liliana/system_viva_rouss/refs/heads/main/"; 
         const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/7794/7794505.png";
-        const PIN_SECRET = "13524680";
+        const DEV_PIN = "13524680"; // PIN DEL DESARROLLADOR
+        const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 Minutos en milisegundos
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqHgV4vDat1-VmZfKbiPg7nuiX-ROcexw",
@@ -483,6 +488,29 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- GESTIÓN DE SEGURIDAD Y PINS ---
+        let unlockedPins = new Set(); // Almacena los PINs desbloqueados temporalmente
+        let currentLinksData = []; // Cache local de los datos para re-renderizar sin ir a DB
+        let inactivityTimer;
+
+        // Función para reiniciar el temporizador de 15 minutos
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (unlockedPins.size > 0) {
+                inactivityTimer = setTimeout(() => {
+                    unlockedPins.clear(); // Borrar todos los desbloqueos
+                    renderLinks(); // Volver a pintar (se bloquearán visualmente)
+                    alert("Sesión de seguridad expirada por inactividad.");
+                    closeWindow();
+                }, INACTIVITY_LIMIT);
+            }
+        }
+
+        // Detectar actividad del usuario para mantener la sesión viva
+        ['mousemove', 'mousedown', 'keypress', 'touchmove'].forEach(evt => {
+            window.addEventListener(evt, resetInactivityTimer);
+        });
+
         // --- PWA MANIFIESTO ---
         const manifest = {
             "name": "VIVA ROUSS", "short_name": "ROUSS", "start_url": ".", "display": "standalone",
@@ -496,7 +524,6 @@
             navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('fetch', function(e){});`], {type: 'application/javascript'})));
         }
 
-        // --- PWA INSTALACIÓN ---
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
@@ -512,39 +539,20 @@
             }
         });
 
-        // ==========================================================
-        // SISTEMA DE CONFIGURACIÓN GLOBAL (PERSISTENCIA DE TEMAS Y VISTAS)
-        // ==========================================================
-        
-        // Referencia al documento de configuración global
+        // --- CONFIGURACIÓN GLOBAL ---
         const configRef = doc(db, "config", "global");
-
-        // Escuchar cambios en la configuración (Tema/Vista) desde Firebase en tiempo real
         onSnapshot(configRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                
-                // Aplicar tema si existe en DB
-                if (data.tema) {
-                    aplicarTemaVisual(data.tema.primary, data.tema.bg, data.tema.card, data.tema.text);
-                }
-                
-                // Aplicar vista si existe en DB
-                if (data.vista) {
-                    aplicarVistaVisual(data.vista);
-                }
-            } else {
-                // Si no existe configuración, crearla por defecto (opcional)
-                console.log("Configuración no encontrada, usando defaults localmente.");
+                if (data.tema) aplicarTemaVisual(data.tema.primary, data.tema.bg, data.tema.card, data.tema.text);
+                if (data.vista) aplicarVistaVisual(data.vista);
             }
         });
 
-        // Función que SÓLO aplica cambios visuales del tema (sin guardar)
         function aplicarTemaVisual(primary, bg, card, text) {
             const root = document.documentElement;
             root.style.setProperty('--primary', primary);
             root.style.setProperty('--bg-color', bg);
-            // Ajustar gradiente según si es claro u oscuro
             if(bg === '#f0f0f0') {
                  root.style.setProperty('--bg-gradient', 'linear-gradient(to bottom, #ffffff, #e0e0e0)');
                  root.style.setProperty('--border-color', '#ccc');
@@ -557,14 +565,11 @@
             document.querySelector('meta[name="theme-color"]').setAttribute('content', primary);
         }
 
-        // Función que SÓLO aplica cambios visuales de la vista (sin guardar)
         function aplicarVistaVisual(claseVista) {
             const container = document.getElementById('links-container');
-            container.className = ""; // Limpiar clases anteriores
-            container.id = "links-container"; // Asegurar ID
-            container.classList.add(claseVista); // Añadir nueva
-
-            // Actualizar botones activos en la UI
+            container.className = "";
+            container.id = "links-container";
+            container.classList.add(claseVista);
             document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
             if(claseVista === 'view-list') document.querySelector('.toolbar button:nth-child(1)').classList.add('active');
             if(claseVista === 'view-columns') document.querySelector('.toolbar button:nth-child(2)').classList.add('active');
@@ -572,59 +577,39 @@
             if(claseVista === 'view-gallery') document.querySelector('.toolbar button:nth-child(4)').classList.add('active');
         }
 
-        // ----------------------------------------------------------
-        // ACCIONES DEL USUARIO (Guardan en DB)
-        // ----------------------------------------------------------
-
-        // Usuario cambia el tema -> Se guarda en Firestore
         window.usuarioCambiaTema = async (primary, bg, card, text) => {
-            // Aplicación optimista (inmediata)
             aplicarTemaVisual(primary, bg, card, text);
             document.getElementById('theme-modal').style.display = 'none';
-
-            // Guardar en DB
-            try {
-                await setDoc(configRef, { 
-                    tema: { primary, bg, card, text } 
-                }, { merge: true });
-            } catch (e) {
-                console.error("Error guardando tema:", e);
-            }
+            try { await setDoc(configRef, { tema: { primary, bg, card, text } }, { merge: true }); } catch (e) {}
         };
 
-        // Usuario cambia la vista -> Se guarda en Firestore
         window.usuarioCambiaVista = async (claseVista) => {
-            // Aplicación optimista
             aplicarVistaVisual(claseVista);
-
-            // Guardar en DB
-            try {
-                await setDoc(configRef, { 
-                    vista: claseVista 
-                }, { merge: true });
-            } catch (e) {
-                console.error("Error guardando vista:", e);
-            }
+            try { await setDoc(configRef, { vista: claseVista }, { merge: true }); } catch (e) {}
         };
 
-        window.mostrarTemas = () => {
-            document.getElementById('theme-modal').style.display = 'flex';
-        };
-
+        window.mostrarTemas = () => { document.getElementById('theme-modal').style.display = 'flex'; };
 
         // ==========================================================
-        // LÓGICA DE ENLACES (CRUD)
+        // LÓGICA DE ENLACES CON SEGURIDAD
         // ==========================================================
         const q = query(collection(db, "enlaces"), orderBy("creado", "asc"));
         
+        // Escucha en tiempo real de DB
         onSnapshot(q, (snapshot) => {
+            currentLinksData = []; // Limpiar cache
+            snapshot.forEach((docSnap) => {
+                currentLinksData.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            renderLinks(); // Renderizar usando el cache y el estado actual de desbloqueo
+        });
+
+        // Función de Renderizado (Se llama desde snapshot o al desbloquear)
+        function renderLinks() {
             const container = document.getElementById('links-container');
             container.innerHTML = "";
             
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const id = docSnap.id;
-
+            currentLinksData.forEach((data) => {
                 let iconFileName = data.nombreIcono && data.nombreIcono.trim() !== "" 
                     ? data.nombreIcono.trim() 
                     : data.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ /g, "_").replace(/[^a-z0-9_]/g, "");
@@ -632,33 +617,52 @@
                 if (!iconFileName.endsWith('.png')) iconFileName += '.png';
                 const finalIconUrl = REPO_URL + iconFileName;
 
+                // Verificar estado de bloqueo
+                const hasPin = data.linkPin && data.linkPin.trim() !== "";
+                const isLocked = hasPin && !unlockedPins.has(data.linkPin);
+
                 const card = document.createElement('div');
-                card.className = 'link-card';
-                // El div principal abre la ventana
+                card.className = `link-card ${isLocked ? 'locked' : ''}`;
+                
                 card.onclick = (e) => {
-                    // Evitar abrir ventana si se hizo clic en los botones de editar/borrar
                     if(e.target.closest('.action-btn')) return;
-                    abrirVentana(data.url, data.titulo);
+
+                    if (isLocked) {
+                        // SI ESTÁ BLOQUEADO: Pedir PIN
+                        const inputPin = prompt(`🔒 Este enlace está protegido.\nIngresa el PIN:`);
+                        if (inputPin === data.linkPin) {
+                            unlockedPins.add(data.linkPin); // Desbloquear este PIN
+                            resetInactivityTimer(); // Iniciar contador
+                            renderLinks(); // Repintar (ahora aparecerá desbloqueado)
+                            abrirVentana(data.url, data.titulo); // Abrir
+                        } else if (inputPin !== null) {
+                            alert("🚫 PIN Incorrecto");
+                        }
+                    } else {
+                        // SI ESTÁ LIBRE O YA DESBLOQUEADO
+                        resetInactivityTimer();
+                        abrirVentana(data.url, data.titulo);
+                    }
                 };
 
                 card.innerHTML = `
+                    <div class="lock-indicator"><i class="fas fa-lock"></i></div>
                     <img src="${finalIconUrl}" class="custom-icon" onerror="this.onerror=null;this.src='${DEFAULT_ICON}';">
                     <span class="link-text">${data.titulo}</span>
                     <div class="card-actions">
-                        <button class="action-btn edit-btn" onclick="iniciarEdicion('${id}', '${data.titulo}', '${data.url}', '${data.nombreIcono || ''}')"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="intentarBorrar('${id}')"><i class="fas fa-trash"></i></button>
+                        <button class="action-btn edit-btn" onclick="iniciarEdicion('${data.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="intentarBorrar('${data.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
             });
-        });
+        }
 
         // --- LÓGICA DE VENTANA FLOTANTE ---
         const winOverlay = document.getElementById('window-overlay');
         const winHeader = document.getElementById('window-header');
         const winIframe = document.getElementById('win-iframe');
         const winTitle = document.getElementById('win-title');
-        const extLink = document.getElementById('external-link');
         let currentZoom = 1;
 
         window.abrirVentana = (url, titulo) => {
@@ -667,7 +671,6 @@
             winOverlay.classList.remove('maximized');
             winIframe.src = url;
             winTitle.innerText = titulo || 'Navegador';
-            extLink.href = url;
             currentZoom = 1;
             actualizarZoom();
         };
@@ -684,7 +687,6 @@
         window.zoomOut = () => { if(currentZoom > 0.2) currentZoom -= 0.1; actualizarZoom(); };
         
         function actualizarZoom() {
-            // Zoom via CSS Transform
             winIframe.style.transform = `scale(${currentZoom})`;
             winIframe.style.width = `${100 / currentZoom}%`;
             winIframe.style.height = `${100 / currentZoom}%`;
@@ -693,93 +695,82 @@
 
         // --- ARRASTRAR VENTANA (DRAG) ---
         let isDragging = false, startX, startY, initialLeft, initialTop;
-
         winHeader.onmousedown = (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return; 
             if(winOverlay.classList.contains('maximized')) return;
-            
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            initialLeft = winOverlay.offsetLeft;
-            initialTop = winOverlay.offsetTop;
-            document.onmousemove = elementDrag;
-            document.onmouseup = stopDrag;
+            isDragging = true; startX = e.clientX; startY = e.clientY; initialLeft = winOverlay.offsetLeft; initialTop = winOverlay.offsetTop;
+            document.onmousemove = elementDrag; document.onmouseup = stopDrag;
         };
-
-        // Soporte Touch para arrastrar en movil
         winHeader.ontouchstart = (e) => {
              if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
              if(winOverlay.classList.contains('maximized')) return;
-             isDragging = true;
-             startX = e.touches[0].clientX;
-             startY = e.touches[0].clientY;
-             initialLeft = winOverlay.offsetLeft;
-             initialTop = winOverlay.offsetTop;
-             document.ontouchmove = elementDragTouch;
-             document.ontouchend = stopDrag;
+             isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; initialLeft = winOverlay.offsetLeft; initialTop = winOverlay.offsetTop;
+             document.ontouchmove = elementDragTouch; document.ontouchend = stopDrag;
         }
-
-        function elementDrag(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            winOverlay.style.left = (initialLeft + e.clientX - startX) + "px";
-            winOverlay.style.top = (initialTop + e.clientY - startY) + "px";
-        }
-
-        function elementDragTouch(e) {
-            if (!isDragging) return;
-            winOverlay.style.left = (initialLeft + e.touches[0].clientX - startX) + "px";
-            winOverlay.style.top = (initialTop + e.touches[0].clientY - startY) + "px";
-        }
-
+        function elementDrag(e) { if (!isDragging) return; e.preventDefault(); winOverlay.style.left = (initialLeft + e.clientX - startX) + "px"; winOverlay.style.top = (initialTop + e.clientY - startY) + "px"; }
+        function elementDragTouch(e) { if (!isDragging) return; winOverlay.style.left = (initialLeft + e.touches[0].clientX - startX) + "px"; winOverlay.style.top = (initialTop + e.touches[0].clientY - startY) + "px"; }
         function stopDrag() { isDragging = false; document.onmousemove = null; document.onmouseup = null; document.ontouchmove = null; document.ontouchend = null; }
 
-
-        // --- SEGURIDAD Y ADMIN ---
-        function pedirPin(callback) {
-            const pin = prompt("🔐 Ingresa el PIN de seguridad:");
-            if (pin === PIN_SECRET) {
-                callback();
-            } else if (pin !== null) {
-                alert("🚫 PIN Incorrecto");
-            }
-        }
-
+        // --- PANEL DE DESARROLLADOR ---
         window.toggleAdmin = () => {
             const p = document.getElementById('admin-panel');
             if (p.style.display === 'none' || p.style.display === '') {
-                 document.getElementById('edit-id').value = "";
-                 document.getElementById('titulo').value = "";
-                 document.getElementById('url').value = "";
-                 document.getElementById('nombreIcono').value = "";
-                 document.getElementById('btn-guardar').innerText = "GUARDAR";
-                 p.style.display = 'block';
-                 p.scrollIntoView({behavior: "smooth"});
+                // PEDIR PIN DE DESARROLLADOR
+                const pin = prompt("🔐 MODO DESARROLLADOR\nIntroduce PIN Maestro:");
+                if (pin === DEV_PIN) {
+                    limpiarFormulario();
+                    p.style.display = 'block';
+                    p.scrollIntoView({behavior: "smooth"});
+                } else if (pin !== null) {
+                    alert("🚫 Acceso Denegado");
+                }
             } else {
-                p.style.display = 'none';
+                ocultarAdmin();
             }
         };
 
+        window.ocultarAdmin = () => {
+             document.getElementById('admin-panel').style.display = 'none';
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('edit-id').value = "";
+            document.getElementById('titulo').value = "";
+            document.getElementById('url').value = "";
+            document.getElementById('nombreIcono').value = "";
+            document.getElementById('linkPin').value = "";
+            document.getElementById('btn-guardar').innerText = "GUARDAR DATOS";
+        }
+
         window.intentarBorrar = (id) => {
-            pedirPin(async () => {
-                if(confirm("¿Seguro que quieres borrar este enlace?")) {
-                    await deleteDoc(doc(db, "enlaces", id));
+            const pin = prompt("🔐 CONFIRMAR BORRADO\nIntroduce PIN Maestro:");
+            if (pin === DEV_PIN) {
+                if(confirm("¿Seguro que quieres borrar este enlace permanentemente?")) {
+                    deleteDoc(doc(db, "enlaces", id));
                 }
-            });
+            } else if (pin !== null) {
+                alert("🚫 PIN Incorrecto");
+            }
         };
 
-        window.iniciarEdicion = (id, titulo, url, icono) => {
-            pedirPin(() => {
+        window.iniciarEdicion = (id) => {
+            const linkData = currentLinksData.find(l => l.id === id);
+            if(!linkData) return;
+
+            const pin = prompt("🔐 EDITAR ENLACE\nIntroduce PIN Maestro:");
+            if (pin === DEV_PIN) {
                 const p = document.getElementById('admin-panel');
                 p.style.display = 'block';
                 document.getElementById('edit-id').value = id;
-                document.getElementById('titulo').value = titulo;
-                document.getElementById('url').value = url;
-                document.getElementById('nombreIcono').value = icono;
-                document.getElementById('btn-guardar').innerText = "ACTUALIZAR";
+                document.getElementById('titulo').value = linkData.titulo;
+                document.getElementById('url').value = linkData.url;
+                document.getElementById('nombreIcono').value = linkData.nombreIcono || "";
+                document.getElementById('linkPin').value = linkData.linkPin || "";
+                document.getElementById('btn-guardar').innerText = "ACTUALIZAR DATOS";
                 p.scrollIntoView({behavior: "smooth"});
-            });
+            } else if (pin !== null) {
+                alert("🚫 PIN Incorrecto");
+            }
         };
 
         window.guardarEnlace = async () => {
@@ -787,24 +778,29 @@
             const titulo = document.getElementById('titulo').value;
             const url = document.getElementById('url').value;
             const nombreIcono = document.getElementById('nombreIcono').value;
+            const linkPin = document.getElementById('linkPin').value;
 
-            if (!titulo || !url) return alert("Faltan datos");
+            if (!titulo || !url) return alert("Falta título o URL");
 
-            const data = { titulo, url, nombreIcono, creado: serverTimestamp() };
+            const data = { 
+                titulo, 
+                url, 
+                nombreIcono, 
+                linkPin, // Nuevo campo para seguridad
+                creado: serverTimestamp() 
+            };
 
             if (id) {
                 delete data.creado; 
                 await updateDoc(doc(db, "enlaces", id), data);
-                alert("Actualizado correctamente");
+                alert("Enlace actualizado");
             } else {
                 await addDoc(collection(db, "enlaces"), data);
+                alert("Enlace creado");
             }
             
-            document.getElementById('titulo').value = "";
-            document.getElementById('url').value = "";
-            document.getElementById('nombreIcono').value = "";
-            document.getElementById('edit-id').value = "";
-            document.getElementById('admin-panel').style.display = 'none';
+            limpiarFormulario();
+            ocultarAdmin();
         };
 
     </script>
